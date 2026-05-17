@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reconya-ai/db"
-	"reconya-ai/internal/device"
-	"reconya-ai/models"
+	"reconya/db"
+	"reconya/internal/device"
+	"reconya/models"
 	"time"
 )
 
@@ -51,9 +51,13 @@ func (s *EventLogService) generateDescription(eventLog models.EventLog) string {
 		}
 	}
 
-	switch eventLog.Type {
-	case models.PingSweep:
-		return "Ping sweep performed"
+			switch eventLog.Type {
+		case models.PingSweep:
+			if eventLog.DurationSeconds != nil {
+				return fmt.Sprintf("Ping sweep completed in %d seconds", int(*eventLog.DurationSeconds))
+			} else {
+				return "Ping sweep performed"
+			}
 	case models.PortScanStarted:
 		return fmt.Sprintf("Port scan started for [%s]", deviceInfo)
 	case models.PortScanCompleted:
@@ -68,12 +72,22 @@ func (s *EventLogService) generateDescription(eventLog models.EventLog) string {
 		return fmt.Sprintf("Local IPv4 address found [%s]", deviceInfo)
 	case models.LocalNetworkFound:
 		return "Local network found"
+	case models.NetworkCreated:
+		return eventLog.Description // Use the custom description for network events
+	case models.NetworkUpdated:
+		return eventLog.Description // Use the custom description for network events
+	case models.NetworkDeleted:
+		return eventLog.Description // Use the custom description for network events
+	case models.ScanStarted:
+		return eventLog.Description // Use the custom description for scan events
+	case models.ScanStopped:
+		return eventLog.Description // Use the custom description for scan events
 	case models.Warning:
 		return "Warning event occurred"
 	case models.Alert:
 		return "Alert event occurred"
 	default:
-		return "Event occurred"
+		return fmt.Sprintf("System event: %s", string(eventLog.Type))
 	}
 }
 
@@ -105,4 +119,17 @@ func (s *EventLogService) CreateOne(eventLog *models.EventLog) error {
 
 	// Use DB manager to serialize database access
 	return s.dbManager.CreateEventLog(s.repository, context.Background(), eventLog)
+}
+
+func (s *EventLogService) Log(eventType models.EEventLogType, description string, deviceID string) error {
+	eventLog := &models.EventLog{
+		Type:        eventType,
+		Description: description,
+	}
+	
+	if deviceID != "" {
+		eventLog.DeviceID = &deviceID
+	}
+	
+	return s.CreateOne(eventLog)
 }

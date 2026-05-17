@@ -16,25 +16,16 @@ const (
 
 type Config struct {
 	JwtKey       []byte
-	NetworkCIDR  string
+	Port         string
 	DatabaseType DatabaseType
-	// SQLite config
 	SQLitePath   string
-	// Common configs
 	Username     string
 	Password     string
 	DatabaseName string
 }
 
 func LoadConfig() (*Config, error) {
-	// Try to load .env file but don't fail if it doesn't exist
-	// This allows using environment variables directly in Docker
 	_ = godotenv.Load()
-
-	networkCIDR := os.Getenv("NETWORK_RANGE")
-	if networkCIDR == "" {
-		return nil, fmt.Errorf("NETWORK_RANGE environment variable is not set")
-	}
 
 	databaseName := os.Getenv("DATABASE_NAME")
 	if databaseName == "" {
@@ -52,22 +43,24 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("JWT_SECRET_KEY environment variable is not set")
 	}
 
-	// Set database type to SQLite
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3008"
+	}
+
 	dbType := string(SQLite)
 
 	config := &Config{
 		JwtKey:       []byte(jwtSecret),
-		NetworkCIDR:  networkCIDR,
+		Port:         port,
 		DatabaseType: DatabaseType(dbType),
 		Username:     username,
 		Password:     password,
 		DatabaseName: databaseName,
 	}
 
-	// Configure SQLite database
 	sqlitePath := os.Getenv("SQLITE_PATH")
 	if sqlitePath == "" {
-		// Default to a data directory in the current directory
 		sqlitePath = filepath.Join("data", fmt.Sprintf("%s.db", databaseName))
 	}
 	config.SQLitePath = sqlitePath

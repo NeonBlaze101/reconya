@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-36YJLYNB5W"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-36YJLYNB5W');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reconya - Network Reconnaissance Tool</title>
-    <meta name="description" content="A powerful network reconnaissance and asset discovery tool built with Go and React">
+    <title>reconYa - Network Reconnaissance Tool</title>
+    <meta name="description" content="A powerful network reconnaissance and asset discovery tool built with Go and HTMX">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto+Condensed:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #0f7f00;
@@ -19,7 +28,8 @@
             --muted-text: #b0b0b0;
         }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 0.9rem;
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
@@ -269,7 +279,7 @@
         <!-- Navigation -->
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="#">Reconya</a>
+                <a class="navbar-brand" href="#">reconYa</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -282,13 +292,10 @@
                             <a class="nav-link" href="#installation">Setup</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#architecture">Tech</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#contribute">Contribute</a>
+                            <a class="nav-link" href="#support">Support</a>
                         </li>
                         <li class="nav-item ms-lg-3">
-                            <a class="btn btn-primary" href="https://github.com/Dyneteq/reconya-ai-go" target="_blank">
+                            <a class="btn btn-primary" href="https://github.com/Dyneteq/reconya" target="_blank">
                                 <i class="bi bi-github me-1"></i> GitHub
                             </a>
                         </li>
@@ -302,9 +309,9 @@
             <div id="particles-js" class="hero-particles"></div>
             <section class="hero d-flex align-items-center">
                 <div class="container text-center">
-                    <h1>Reconya</h1>
+                    <h1>reconYa</h1>
                     <p class="lead mb-5 col-md-10 mx-auto">
-                        A powerful network reconnaissance and asset discovery tool built with Go and React, designed to help map and monitor network devices with precision and elegance.
+                        A powerful network reconnaissance and asset discovery tool built with Go and HTMX, designed to help map and monitor network devices with precision and elegance.
                     </p>
                     <div>
                         <a href="#installation" class="btn btn-primary btn-lg px-4 me-md-2">Get Started</a>
@@ -317,7 +324,7 @@
         <!-- Screenshot Section -->
         <section class="section bg-darker">
             <div class="container text-center">
-                <img src="screenshots/dashboard.png" alt="Reconya Dashboard" class="screenshot img-fluid" style="max-width: 85%;">
+                <img src="screenshots/dashboard.png" alt="reconYa Dashboard" class="screenshot img-fluid" style="max-width: 85%;">
             </div>
         </section>
 
@@ -386,54 +393,121 @@
 
         <!-- Installation Section -->
         <section id="installation" class="section bg-darker">
+            <style>
+                .install-command-wrapper {
+                    position: relative;
+                    background-color: #1a1a1a;
+                    border-radius: 8px;
+                    border: 1px solid rgba(15, 127, 0, 0.3);
+                    padding: 1.25rem 3.5rem 1.25rem 1.25rem;
+                    margin: 1.5rem 0;
+                    overflow-x: auto;
+                }
+                .install-command-wrapper code {
+                    font-family: 'Roboto Mono', monospace;
+                    font-size: 0.85rem;
+                    color: var(--primary-color);
+                    word-break: break-all;
+                    white-space: pre-wrap;
+                }
+                .copy-btn {
+                    position: absolute;
+                    top: 0.75rem;
+                    right: 0.75rem;
+                    background: rgba(15, 127, 0, 0.2);
+                    border: 1px solid rgba(15, 127, 0, 0.4);
+                    color: var(--primary-color);
+                    border-radius: 6px;
+                    padding: 0.35rem 0.6rem;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    font-size: 1rem;
+                }
+                .copy-btn:hover {
+                    background: rgba(15, 127, 0, 0.4);
+                    border-color: var(--primary-color);
+                }
+                .copy-btn.copied {
+                    background: rgba(15, 127, 0, 0.5);
+                    color: white;
+                }
+                .install-tabs {
+                    display: flex;
+                    gap: 0;
+                    margin-bottom: 0;
+                }
+                .install-tab {
+                    padding: 0.5rem 1.25rem;
+                    background: transparent;
+                    border: 1px solid rgba(15, 127, 0, 0.2);
+                    border-bottom: none;
+                    color: var(--muted-text);
+                    cursor: pointer;
+                    font-family: 'Orbitron', sans-serif;
+                    font-size: 0.75rem;
+                    letter-spacing: 1px;
+                    transition: all 0.2s ease;
+                    border-radius: 6px 6px 0 0;
+                }
+                .install-tab:hover {
+                    color: var(--primary-color);
+                }
+                .install-tab.active {
+                    background: #1a1a1a;
+                    color: var(--primary-color);
+                    border-color: rgba(15, 127, 0, 0.3);
+                }
+                .install-tab-content {
+                    display: none;
+                }
+                .install-tab-content.active {
+                    display: block;
+                }
+            </style>
             <div class="container">
                 <h2 class="section-title">Installation</h2>
                 <div class="row g-4">
-                    <div class="col-lg-6">
-                        <h3 class="h4 fw-bold mb-3">Prerequisites</h3>
-                        <ul class="list-group mb-4">
-                            <li class="list-group-item bg-dark text-light border-dark">
-                                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                Docker and Docker Compose (for easy deployment)
-                            </li>
-                            <li class="list-group-item bg-dark text-light border-dark">
-                                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                Go 1.16+ (for development only)
-                            </li>
-                            <li class="list-group-item bg-dark text-light border-dark">
-                                <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                Node.js 14+ and npm (for development only)
-                            </li>
-                        </ul>
-                        <h3 class="h4 fw-bold mb-3">Quick Start</h3>
-                        <div class="code-block">
-                            <code>
-                                $ git clone https://github.com/Dyneteq/reconya-ai-go.git<br>
-                                $ cd reconya-ai-go<br>
-                                $ ./setup.sh
-                            </code>
+                    <div class="col-lg-7">
+                        <div class="install-tabs">
+                            <button class="install-tab active" onclick="switchInstallTab('binary')">Binary</button>
+                            <button class="install-tab" onclick="switchInstallTab('source')">From Source</button>
                         </div>
-                        <p>Access the application at <code>http://localhost:3001</code></p>
+
+                        <div id="install-binary" class="install-tab-content active">
+                            <div class="install-command-wrapper" style="border-radius: 0 8px 8px 8px;">
+                                <button class="copy-btn" onclick="copyBinaryCommand(this)" title="Copy to clipboard">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                                <code>curl -sL https://raw.githubusercontent.com/Dyneteq/reconya/master/install.sh | sh</code>
+                            </div>
+                            <p style="color: var(--muted-text);">Auto-detects your OS and architecture. Available for <strong class="text-light">Linux</strong> (x86_64, ARM64) and <strong class="text-light">macOS</strong> (Intel, Apple Silicon).</p>
+                        </div>
+
+                        <div id="install-source" class="install-tab-content">
+                            <div class="install-command-wrapper" style="border-radius: 0 8px 8px 8px;">
+                                <button class="copy-btn" onclick="copySourceCommand(this)" title="Copy to clipboard">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                                <code>git clone https://github.com/Dyneteq/reconya.git && cd reconya && make install && make start</code>
+                            </div>
+                            <p style="color: var(--muted-text);">Requires <strong class="text-light">Go 1.21+</strong> and <strong class="text-light">make</strong>.</p>
+                        </div>
+
+                        <p class="mt-3">Access the dashboard at <code>http://localhost:3008</code><br>
+                        <span style="color: var(--muted-text);">Default login: <code>admin</code> / <code>password</code></span></p>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-5">
                         <div class="card h-100 p-4">
-                            <h3 class="h4 fw-bold mb-3">Manual Deployment</h3>
-                            <p>If you prefer to set things up manually:</p>
-                            <ol class="text-light">
-                                <li class="mb-2">Configure environment variables:
-                                    <div class="code-block my-2">
-                                        <code>$ cp .env.example .env</code>
-                                    </div>
-                                </li>
-                                <li class="mb-2">Build and start the containers:
-                                    <div class="code-block my-2">
-                                        <code>$ docker compose up -d</code>
-                                    </div>
-                                </li>
-                                <li>Access the application at <code>http://localhost:3001</code></li>
+                            <h3 class="h4 fw-bold mb-3">After Installing</h3>
+                            <ol class="text-light mb-4">
+                                <li class="mb-2">Open <code>http://localhost:3008</code></li>
+                                <li class="mb-2">Log in with default credentials</li>
+                                <li class="mb-2">Set up a network to scan</li>
+                                <li>Devices appear as they're discovered</li>
                             </ol>
-                            <a href="https://github.com/Dyneteq/reconya-ai-go#-installation" class="btn btn-primary mt-auto" target="_blank">
-                                Detailed Guide <i class="bi bi-arrow-right"></i>
+                            <p style="color: var(--muted-text); font-size: 0.85rem;">Network scanning requires root/sudo for ARP and ICMP access.</p>
+                            <a href="https://github.com/Dyneteq/reconya#quick-install-pre-built-binary" class="btn btn-primary mt-auto" target="_blank">
+                                Full Documentation <i class="bi bi-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -441,145 +515,79 @@
             </div>
         </section>
 
-        <!-- Architecture Section -->
-        <section id="architecture" class="section">
-            <div class="container">
-                <h2 class="section-title">Architecture</h2>
-                <div class="row g-4">
-                    <div class="col-lg-6">
-                        <div class="card h-100 p-4">
-                            <h3 class="h4 fw-bold">Technology Stack</h3>
-                            <ul class="list-unstyled tech-list">
-                                <li class="mb-3">
-                                    <i class="bi bi-code-square text-primary me-2"></i>
-                                    <strong>Backend:</strong> Go API server with SQLite for storage
-                                </li>
-                                <li class="mb-3">
-                                    <i class="bi bi-brush text-primary me-2"></i>
-                                    <strong>Frontend:</strong> React/TypeScript with responsive Bootstrap UI
-                                </li>
-                                <li class="mb-3">
-                                    <i class="bi bi-search text-primary me-2"></i>
-                                    <strong>Scanning:</strong> Network operations through native Go libraries
-                                </li>
-                                <li class="mb-3">
-                                    <i class="bi bi-arrow-repeat text-primary me-2"></i>
-                                    <strong>Real-time:</strong> Polling system with configurable intervals
-                                </li>
-                                <li>
-                                    <i class="bi bi-docker text-primary me-2"></i>
-                                    <strong>Deployment:</strong> Docker Compose for easy setup
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="card h-100 p-4">
-                            <h3 class="h4 fw-bold">Database: SQLite</h3>
-                            <p>The application uses SQLite for its database, offering several advantages:</p>
-                            <ul class="list-unstyled tech-list">
-                                <li class="mb-2">
-                                    <i class="bi bi-box text-primary me-2"></i>
-                                    Self-contained, no separate database service required
-                                </li>
-                                <li class="mb-2">
-                                    <i class="bi bi-puzzle text-primary me-2"></i>
-                                    Simple setup with minimal configuration
-                                </li>
-                                <li class="mb-2">
-                                    <i class="bi bi-house text-primary me-2"></i>
-                                    Perfect for personal or organizational deployments
-                                </li>
-                                <li class="mb-2">
-                                    <i class="bi bi-feather text-primary me-2"></i>
-                                    Lightweight and portable
-                                </li>
-                                <li class="mb-2">
-                                    <i class="bi bi-lock text-primary me-2"></i>
-                                    Data is stored locally in a single file
-                                </li>
-                                <li>
-                                    <i class="bi bi-x-circle text-primary me-2"></i>
-                                    No need for database administration
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Security Section -->
-        <section class="section bg-darker">
-            <div class="container">
-                <h2 class="section-title">Security Notes</h2>
-                <div class="row">
-                    <div class="col-lg-8 mx-auto">
-                        <div class="card p-4">
-                            <ul class="list-unstyled tech-list">
-                                <li class="mb-3">
-                                    <i class="bi bi-key text-warning me-2"></i>
-                                    Always use strong passwords in production environments
-                                </li>
-                                <li class="mb-3">
-                                    <i class="bi bi-lock text-warning me-2"></i>
-                                    Use an <code>.env</code> file for all sensitive configuration
-                                </li>
-                                <li class="mb-3">
-                                    <i class="bi bi-shield text-warning me-2"></i>
-                                    Never expose the backend API directly to the internet
-                                </li>
-                                <li class="mb-3">
-                                    <i class="bi bi-person-badge text-warning me-2"></i>
-                                    Run with least privilege required for network scanning
-                                </li>
-                                <li class="mb-3">
-                                    <i class="bi bi-arrow-repeat text-warning me-2"></i>
-                                    Keep dependencies updated to patch security vulnerabilities
-                                </li>
-                                <li>
-                                    <i class="bi bi-bug text-warning me-2"></i>
-                                    Regularly test your deployment for security issues
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Contribute Section -->
-        <section id="contribute" class="section">
-            <div class="container">
-                <h2 class="section-title">Contributing</h2>
-                <div class="row g-4">
-                    <div class="col-lg-6 mx-auto">
-                        <div class="card p-4">
-                            <p class="lead">Contributions are welcome! Please feel free to submit a Pull Request.</p>
-                            <ol class="text-light">
-                                <li class="mb-2">Fork the repository on GitHub</li>
-                                <li class="mb-2">Create your feature branch 
-                                    <div class="code-block my-2">
-                                        <code>git checkout -b feature/amazing-feature</code>
-                                    </div>
-                                </li>
-                                <li class="mb-2">Commit your changes 
-                                    <div class="code-block my-2">
-                                        <code>git commit -m 'Add some amazing feature'</code>
-                                    </div>
-                                </li>
-                                <li class="mb-2">Push to the branch 
-                                    <div class="code-block my-2">
-                                        <code>git push origin feature/amazing-feature</code>
-                                    </div>
-                                </li>
-                                <li>Open a Pull Request with a detailed description</li>
-                            </ol>
-                            <a href="https://github.com/Dyneteq/reconya-ai-go/issues" class="btn btn-primary mt-3" target="_blank">
-                                <i class="bi bi-bug me-1"></i> Open an Issue
-                            </a>
-                        </div>
-                    </div>
+        <!-- Support Section -->
+        <section id="support" class="section bg-darker">
+            <style>
+                .sponsor-grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 20px;
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+                .sponsor-link {
+                    background: rgba(15, 127, 0, 0.1);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(15, 127, 0, 0.3);
+                    border-radius: 15px;
+                    padding: 20px 15px;
+                    text-align: center;
+                    text-decoration: none;
+                    color: var(--text-color);
+                    font-weight: 600;
+                    font-size: 0.95rem;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .sponsor-link:hover {
+                    transform: translateY(-5px) scale(1.02);
+                    background: rgba(15, 127, 0, 0.2);
+                    border-color: rgba(15, 127, 0, 0.6);
+                    box-shadow: 0 10px 30px rgba(15, 127, 0, 0.2);
+                    color: var(--primary-color);
+                }
+                .sponsor-link i {
+                    font-size: 1.8rem;
+                    color: var(--primary-color);
+                }
+                @media (max-width: 768px) {
+                    .sponsor-grid {
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 15px;
+                    }
+                    .sponsor-link {
+                        padding: 15px 10px;
+                    }
+                    .sponsor-link i {
+                        font-size: 1.5rem;
+                    }
+                }
+            </style>
+            <div class="container text-center">
+                <h2 class="section-title" style="display: inline-block;">Support reconYa</h2>
+                <p class="col-md-8 mx-auto mb-5" style="color: var(--muted-text); font-size: 1.1rem;">
+                    <strong>reconYa</strong> is free and open-source. If you find it useful, consider supporting its development — every contribution keeps the project alive and growing.
+                </p>
+                <div class="sponsor-grid">
+                    <a href="https://github.com/sponsors/chrisvel" class="sponsor-link" target="_blank">
+                        <i class="bi bi-github"></i>
+                        <span>GitHub Sponsors</span>
+                    </a>
+                    <a href="https://www.patreon.com/ChrisVeleris" class="sponsor-link" target="_blank">
+                        <i class="bi bi-cash-stack"></i>
+                        <span>Patreon</span>
+                    </a>
+                    <a href="https://coff.ee/chrisveleris" class="sponsor-link" target="_blank">
+                        <i class="bi bi-cup-hot"></i>
+                        <span>Buy Me a Coffee</span>
+                    </a>
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=QEQCKLXPB6XAE" class="sponsor-link" target="_blank">
+                        <i class="bi bi-paypal"></i>
+                        <span>PayPal</span>
+                    </a>
                 </div>
             </div>
         </section>
@@ -589,8 +597,8 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-6">
-                        <h3 class="h4 mb-4">RECONYA</h3>
-                        <p>A powerful network reconnaissance and asset discovery tool built with Go and React.</p>
+                        <h3 class="h4 mb-4">reconYa</h3>
+                        <p>A powerful network reconnaissance and asset discovery tool built with Go and HTMX.</p>
                         <p>This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.</p>
                     </div>
                     <div class="col-lg-3">
@@ -598,29 +606,28 @@
                         <ul class="list-unstyled tech-list">
                             <li><a href="#features" class="text-light">FEATURES</a></li>
                             <li><a href="#installation" class="text-light">INSTALLATION</a></li>
-                            <li><a href="#architecture" class="text-light">ARCHITECTURE</a></li>
-                            <li><a href="#contribute" class="text-light">CONTRIBUTE</a></li>
+                            <li><a href="#support" class="text-light">SUPPORT</a></li>
                         </ul>
                     </div>
                     <div class="col-lg-3">
                         <h4 class="h5 mb-4">CONNECT</h4>
                         <div class="mb-3">
-                            <a href="https://github.com/Dyneteq/reconya-ai-go" class="social-link" target="_blank">
+                            <a href="https://github.com/Dyneteq/reconya" class="social-link" target="_blank">
                                 <i class="bi bi-github"></i>
                             </a>
-                            <a href="#" class="social-link" target="_blank">
-                                <i class="bi bi-twitter"></i>
+                            <a href="https://discord.gg/JW7VtBnNXp" class="social-link" target="_blank">
+                                <i class="bi bi-discord"></i>
                             </a>
-                            <a href="#" class="social-link" target="_blank">
-                                <i class="bi bi-linkedin"></i>
+                            <a href="https://www.reddit.com/r/reconya/" class="social-link" target="_blank">
+                                <i class="bi bi-reddit"></i>
                             </a>
                         </div>
-                        <p>Found an issue? <a href="https://github.com/Dyneteq/reconya-ai-go/issues" class="text-light">Report it</a></p>
+                        <p>Found an issue? <a href="https://github.com/Dyneteq/reconya/issues" class="text-light">Report it</a></p>
                     </div>
                 </div>
                 <hr class="mt-4 mb-4 border-secondary">
                 <div class="text-center">
-                    <p>&copy; 2025 Reconya. All rights reserved.</p>
+                    <p>&copy; 2025 reconYa. All rights reserved.</p>
                 </div>
             </div>
         </footer>
@@ -760,6 +767,37 @@
                 behavior: 'smooth'
             });
         });
+
+        // Install command copy and tab switching
+        function showCopied(btn) {
+            var icon = btn.querySelector('i');
+            icon.className = 'bi bi-check-lg';
+            btn.classList.add('copied');
+            setTimeout(function() {
+                icon.className = 'bi bi-clipboard';
+                btn.classList.remove('copied');
+            }, 2000);
+        }
+
+        function copyCommand(btn, cmd) {
+            navigator.clipboard.writeText(cmd).then(function() { showCopied(btn); });
+        }
+
+        function copyBinaryCommand(btn) {
+            copyCommand(btn, 'curl -sL https://raw.githubusercontent.com/Dyneteq/reconya/master/install.sh | sh');
+        }
+
+        function copySourceCommand(btn) {
+            copyCommand(btn, 'git clone https://github.com/Dyneteq/reconya.git && cd reconya && make install && make start');
+        }
+
+        function switchInstallTab(tab) {
+            var mainTabs = document.getElementById('install-binary').previousElementSibling;
+            mainTabs.querySelectorAll('.install-tab').forEach(function(t) { t.classList.remove('active'); });
+            document.querySelectorAll('.install-tab-content').forEach(function(c) { c.classList.remove('active'); });
+            document.getElementById('install-' + tab).classList.add('active');
+            event.target.classList.add('active');
+        }
 
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {

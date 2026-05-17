@@ -1,30 +1,39 @@
 package portscan
 
 import (
-	"context"
-	"encoding/xml"
+	"fmt"
 	"log"
-	"os/exec"
-	"reconya-ai/internal/device"
-	"reconya-ai/internal/eventlog"
-	"reconya-ai/internal/util"
-	"reconya-ai/internal/webservice"
-	"reconya-ai/models"
 	"strings"
 	"time"
+
+	"reconya/internal/eventlog"
+	"reconya/internal/scanner"
+	"reconya/internal/util"
+	"reconya/internal/webservice"
+	"reconya/models"
 )
 
-type PortScanService struct {
-	DeviceService   *device.DeviceService
-	EventLogService *eventlog.EventLogService
-	WebService      *webservice.WebService
+// DeviceServicePortScanner defines the interface for device-related operations needed by PortScanService.
+type DeviceServicePortScanner interface {
+	FindByIPv4(ipv4 string) (*models.Device, error)
+	CreateOrUpdate(device *models.Device) (*models.Device, error)
+	EligibleForPortScan(device *models.Device) bool
+	PerformDeviceFingerprinting(device *models.Device)
 }
 
-func NewPortScanService(deviceService *device.DeviceService, eventLogService *eventlog.EventLogService) *PortScanService {
+type PortScanService struct {
+	DeviceService      DeviceServicePortScanner
+	EventLogService    *eventlog.EventLogService
+	WebService         *webservice.WebService
+	ScreenshotsEnabled bool // Global setting for automated scans - defaults to false for performance
+}
+
+func NewPortScanService(deviceService DeviceServicePortScanner, eventLogService *eventlog.EventLogService) *PortScanService {
 	return &PortScanService{
-		DeviceService:   deviceService,
-		EventLogService: eventLogService,
-		WebService:      webservice.NewWebService(),
+		DeviceService:      deviceService,
+		EventLogService:    eventLogService,
+		WebService:         webservice.NewWebService(),
+		ScreenshotsEnabled: false, // Default to disabled for automated scans to improve performance
 	}
 }
 
@@ -90,10 +99,15 @@ func (s *PortScanService) Run(requestedDevice models.Device) {
 	}
 	log.Printf("Port scan for IP [%s] completed. Found ports: %+v, Type: %s, Vendor: %s", device.IPv4, ports, device.DeviceType, vendor)
 	
-	// Start web service scanning if we found open ports (with screenshots during portscan)
+	// Start web service scanning if we found open ports
 	if len(ports) > 0 {
-		log.Printf("Starting web service scan with screenshots for IP [%s]", device.IPv4)
-		s.scanWebServicesWithScreenshots(updatedDevice)
+		if s.ScreenshotsEnabled {
+			log.Printf("Starting web service scan with screenshots for IP [%s]", device.IPv4)
+			s.scanWebServicesWithScreenshots(updatedDevice)
+		} else {
+			log.Printf("Starting web service scan without screenshots for IP [%s]", device.IPv4)
+			s.scanWebServices(updatedDevice)
+		}
 	}
 	
 	// Use retry logic for creating event log
@@ -110,63 +124,26 @@ func (s *PortScanService) Run(requestedDevice models.Device) {
 }
 
 func (s *PortScanService) ExecutePortScan(ipv4 string) ([]models.Port, string, string, error) {
-	// Use optimized scan options with timeout
-	// -sT: TCP connect scan (reliable), -T4: aggressive timing, --top-ports: scan most common ports
-	log.Printf("Running optimized port scan for IP %s (top 100 ports, 2min timeout)", ipv4)
-	
-	// Create context with 2 minute timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
-	defer cancel()
-	
-	cmd := exec.CommandContext(ctx, "nmap", "-sT", "-T4", "--top-ports", "100", "-oX", "-", ipv4)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		if ctx.Err() == context.DeadlineExceeded {
-			log.Printf("Port scan timeout for %s after 2 minutes", ipv4)
-			return nil, "", "", ctx.Err()
-		}
-		log.Printf("nmap error: %v, output: %s", err, string(output))
-		return nil, "", "", err
-	}
+	// Use native Go scanner - no nmap dependency
+	log.Printf("Running native port scan for IP %s", ipv4)
 
-	log.Printf("Scan completed for %s, parsing results", ipv4)
-	ports, vendor, hostname := s.ParseNmapOutput(string(output))
-	return ports, vendor, hostname, nil
-}
+	nativeScanner := scanner.NewNativeScanner()
+	portResults := nativeScanner.ScanPorts(ipv4, scanner.GetDefaultPorts())
 
-func (s *PortScanService) ParseNmapOutput(output string) ([]models.Port, string, string) {
-	var nmapXML models.NmapXML
-	err := xml.Unmarshal([]byte(output), &nmapXML)
-	if err != nil {
-		log.Printf("Error parsing Nmap XML output: %v", err)
-		return nil, "", ""
-	}
-
+	// Convert scanner results to models.Port
 	var ports []models.Port
-	var vendor, hostname string
-	for _, host := range nmapXML.Hosts {
-		for _, address := range host.Addresses {
-			if address.AddrType == "mac" && address.Vendor != "" {
-				vendor = address.Vendor
-				break
-			}
+	for _, result := range portResults {
+		port := models.Port{
+			Number:   fmt.Sprintf("%d", result.Port),
+			Protocol: result.Protocol,
+			State:    "open",
+			Service:  result.Service,
 		}
-
-		if len(host.Hostnames) > 0 {
-			hostname = host.Hostnames[0].Name
-		}
-
-		for _, xmlPort := range host.Ports {
-			port := models.Port{
-				Number:   xmlPort.PortID,
-				Protocol: xmlPort.Protocol,
-				State:    xmlPort.State.State,
-				Service:  xmlPort.Service.Name,
-			}
-			ports = append(ports, port)
-		}
+		ports = append(ports, port)
 	}
-	return ports, vendor, hostname
+
+	log.Printf("Scan completed for %s, found %d open ports", ipv4, len(ports))
+	return ports, "", "", nil
 }
 
 // scanWebServices scans for web services on the device and updates the device with web info (no screenshots)
@@ -185,7 +162,7 @@ func (s *PortScanService) scanWebServicesWithScreenshots(device *models.Device) 
 		return
 	}
 
-	webInfos := s.WebService.ScanWebServicesWithScreenshots(device, true)
+	webInfos := s.WebService.ScanWebServicesWithScreenshots(device, s.ScreenshotsEnabled)
 	s.saveWebServices(device, webInfos)
 }
 

@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"reconya-ai/db"
-	"reconya-ai/internal/config"
+	"reconya/db"
+	"reconya/internal/config"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/require"
@@ -42,7 +42,6 @@ func GetTestConfig() *config.Config {
 		DatabaseType: config.SQLite,
 		SQLitePath:   ":memory:",
 		DatabaseName: "reconya_test",
-		NetworkCIDR:  "192.168.1.0/24",
 		JwtKey:       []byte("test_jwt_secret_key_for_testing_only"),
 		Username:     "test_admin",
 		Password:     "test_password",

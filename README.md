@@ -1,278 +1,293 @@
 # Reconya
 
-A powerful network reconnaissance and asset discovery tool built with Go and React, designed to help map and monitor network devices with precision and elegance.
+Network reconnaissance and asset discovery tool built with Go and HTMX.
 
-<div align="center">
-  <img src="screenshots/dashboard.png" alt="Reconya Dashboard" width="80%">
-</div>
+![Dashboard Screenshot](screenshots/dashboard.png)
 
-## 🌟 Overview
+## Overview
 
-Reconya helps users discover, identify, and monitor devices on their network with real-time updates and an intuitive interface. Our tool is perfect for network administrators, security professionals, and tech enthusiasts.
+Reconya discovers and monitors devices on your network with real-time updates. Suitable for network administrators, security professionals, and home users.
 
-### ✨ Key Features
+### Features
 
-- 🔎 **Advanced Network Scanning** - Comprehensive port scanning and ping sweeping with nmap integration
-- 🧩 **Enhanced Device Identification** - MAC addresses, vendor detection, and hostname resolution
-- 🕸️ **Network Visualization** - Clear and interactive network topology mapping
-- 📊 **Event Monitoring** - Real-time logging and monitoring of network events
-- 🖥️ **Modern Dashboard** - Sleek, responsive web interface for all devices
-- 🔍 **Deep Device Fingerprinting** - Hardware vendor identification and network interface details
+- **IPv4 Network Scanning** - Comprehensive device discovery with native Go implementation
+- **IPv6 Passive Monitoring** - Detects IPv6 devices through neighbor discovery and interface monitoring
+- **Device Identification** - MAC addresses, vendor detection, hostnames, and device types
+- **Dual-Stack Support** - Full IPv4 and IPv6 address display and management
+- **Real-time Monitoring** - Live device status updates and event logging
+- **Web-based Dashboard** - Modern HTMX-powered interface with dark theme
+- **Device Fingerprinting** - Automatic OS and device type detection
+- **Network Management** - Multi-network support with CIDR configuration
 
-## 🚀 Installation
+## Community
 
-### 📋 Prerequisites
+Join our community for support, discussions, and updates:
 
-- 🐳 Docker and Docker Compose (for easy deployment)
-- 🔹 Go 1.16+ (for development only)
-- 🟢 Node.js 14+ and npm (for development only)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/JW7VtBnNXp)  
+[![Reddit](https://img.shields.io/badge/Reddit-r/reconya-ff4500?style=for-the-badge&logo=reddit&logoColor=white)](https://www.reddit.com/r/reconya/)
 
-### 🚀 Quick Start (Recommended)
+## Important Notice: Docker Implementation Status
 
-The easiest way to get started is using our setup script:
+⚠️ **Docker networking has been moved to experimental status due to fundamental limitations.**
 
-1. Clone the repository:
+The fundamental limitation is Docker's network architecture. Even with comprehensive MAC discovery methods, privileged mode, and enhanced capabilities, Docker containers cannot reliably access Layer 2 (MAC address) information across different network segments.
+
+**For full functionality, including complete MAC address discovery, please use the local installation method below.**
+
+Docker files have been moved to the `experimental/` directory for those who want to experiment with containerized deployment, but local installation is the recommended approach.
+
+## Quick Install (Pre-built Binary)
+
+Download and set up reconYa with a single command:
+
+```bash
+curl -sL https://raw.githubusercontent.com/Dyneteq/reconya/master/install.sh | sh
+```
+
+This auto-detects your OS and architecture, downloads the correct binary, and sets up the config.
+
+**Available platforms:** Linux (x86_64, ARM64), macOS (Intel, Apple Silicon)
+
+After installing, start reconYa:
+
+```bash
+cd reconya && sudo ./reconya-*
+```
+
+Then open your browser to: `http://localhost:3008`
+Default login: `admin` / `password`
+
+## Build from Source
+
+If you prefer to build from source, you'll need:
+
+- **Go 1.21 or later** - [Download Go](https://golang.org/dl/)
+- **make** - Build tool (pre-installed on most Unix systems)
+
+### One-Command Installation
+
+```bash
+git clone https://github.com/Dyneteq/reconya.git
+cd reconya
+make install
+```
+
+This will:
+- Download Go dependencies
+- Create default `.env` configuration file
+
+**After installation, use these commands:**
+```bash
+make start       # Start reconYa as daemon
+make start-dev   # Start in foreground (dev mode)
+make stop        # Stop reconYa
+make status      # Check service status
+make logs        # View logs
+make help        # Show all commands
+```
+
+Then open your browser to: `http://localhost:3008`
+Default login: `admin` / `password`
+
+### Manual Installation
+
+If you prefer to install manually:
+
+#### Prerequisites
+
+1. **Install Go** (1.21 or later): https://golang.org/dl/
+
+#### Setup & Run
+
+1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Dyneteq/reconya-ai-go.git
-   cd reconya-ai-go
+   git clone https://github.com/Dyneteq/reconya.git
+   cd reconya
    ```
 
-2. Run the setup script:
-   ```bash
-   ./setup.sh
-   ```
-   
-   The script will:
-   - Check for dependencies
-   - Guide you through configuration
-   - Set up environment variables
-   - Build and start the application
-
-3. Access the application at `http://localhost:3001`
-
-### 🏭 Manual Deployment
-
-If you prefer to set things up manually:
-
-1. Configure environment variables:
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Edit `.env` with your configuration (network range, credentials, etc.)
-
-2. Build and start the containers:
-   ```bash
-   docker compose up -d
-   ```
-
-3. Access the application at `http://localhost:3001`
-
-### 🛠️ Helper Scripts
-
-We provide several convenient scripts to manage Reconya:
-
-- `setup.sh` - Interactive setup script (recommended for first-time users)
-- `start.sh` - Start the application
-- `stop.sh` - Stop the application
-- `logs.sh` - View application logs
-  ```bash
-  # View all logs
-  ./logs.sh
-  
-  # Follow logs (live updates)
-  ./logs.sh -f
-  
-  # View only backend or frontend logs
-  ./logs.sh backend
-  ./logs.sh frontend
-  ```
-
-### 💻 Development Setup
-
-For development purposes:
-
-#### 🔧 Backend Setup
-
-1. Set up environment variables:
+2. **Setup backend:**
    ```bash
    cd backend
    cp .env.example .env
-   ```
-   Edit `.env` with your configuration.
-
-2. Install dependencies:
-   ```bash
-   cd backend
+   # Edit .env file to set your credentials
    go mod download
    ```
 
-3. **Enhanced Network Scanning Setup** (Required for MAC addresses and vendor detection):
-
-   Install nmap:
+3. **Start the application:**
    ```bash
-   # macOS (using Homebrew)
-   brew install nmap
-   
-   # Ubuntu/Debian
-   sudo apt-get install nmap
-   
-   # CentOS/RHEL
-   sudo yum install nmap
+   cd backend
+   go run ./cmd
    ```
 
-   Configure nmap for enhanced device detection:
+   **Windows users:** If you encounter SQLite CGO errors, use:
    ```bash
-   # Allow nmap to run with elevated privileges for MAC address detection
-   echo "$(whoami) ALL=(ALL) NOPASSWD: $(which nmap)" | sudo tee /etc/sudoers.d/reconya-nmap
-   sudo chmod 440 /etc/sudoers.d/reconya-nmap
-   
-   # Set nmap to run with setuid (alternative approach for better performance)
-   sudo chown root:admin $(which nmap)
-   sudo chmod u+s $(which nmap)
+   cd backend
+   CGO_ENABLED=1 go run ./cmd
    ```
 
-   **Note**: These commands enable nmap to capture MAC addresses and vendor information from network devices. Without elevated privileges, you'll only see IP addresses and hostnames.
+4. **Access the application:**
+   - Open your browser to: `http://localhost:3008`
+   - Default login: `admin` / `password` (check your `.env` file for custom credentials)
 
-4. Run the backend:
-   ```bash
-   go run cmd/main.go
-   ```
+## How to Use
 
-#### 🎨 Frontend Setup
+1. Login with your credentials (default: `admin` / `password`)
+2. Set up a new network
+3. Choose the network from the dropdown and start scan
+4. Devices will automatically appear as they're discovered on your network
+5. Click on devices to see details including:
+   - MAC addresses and vendor information
+   - Open ports and running services
+   - Operating system fingerprints
+   - Device screenshots (for web services)
+6. Use the network map to visualize device locations
+7. Monitor the event log for network activity
 
-1. Install dependencies:
-   ```bash
-   cd frontend
-   npm install
-   ```
+## IPv6 Passive Monitoring
 
-2. Configure environment variables:
-   ```bash
-   cp .env.example .env
-   ```
+reconYa includes advanced IPv6 passive monitoring capabilities that activate automatically during network scans:
 
-3. Start the development server:
-   ```bash
-   npm start
-   ```
+### How It Works
+- **Neighbor Discovery Protocol (NDP)** - Monitors IPv6 neighbor cache for active devices
+- **Interface Monitoring** - Detects IPv6 addresses on network interfaces
+- **Automatic Classification** - Identifies Link-Local, Unique Local, and Global addresses
+- **Dual-Stack Integration** - Links IPv6 addresses to existing IPv4 devices via MAC addresses
 
-4. Access the web interface at `http://localhost:3001`
+### IPv6 Address Types
+- **Link-Local** (`fe80::/10`) - Local network segment addresses
+- **Unique Local** (`fc00::/7`) - Private network addresses  
+- **Global** (`2000::/3`) - Internet-routable addresses
 
-#### ⚙️ Production Customization
+### Features
+- **Passive Detection** - No network traffic generated, only monitors existing traffic
+- **Real-time Updates** - IPv6 addresses appear in device list and details
+- **Cross-Platform** - Works on Linux, macOS, and Windows
+- **Automatic Activation** - Starts with scanning, stops when idle
 
-- 🔧 **NGINX Configuration**: Edit `frontend/nginx.conf` to customize the web server settings
-- 🔒 **SSL/TLS**: For HTTPS, use a reverse proxy like Traefik or modify the NGINX configuration
-- 💾 **Persistence**: Database files are stored in the `backend/data` directory. Consider mounting this to a persistent volume
-- 🔄 **Auto-updates**: Set up a CI/CD pipeline for automated deployments
+## Configuration
 
-## 📝 Usage
+Edit the `backend/.env` file to customize:
 
-1. 🔑 Log in with credentials configured in your `.env` file
-2. 🌐 Configure network range to scan in the settings
-3. 🔍 Run discovery to find devices on your network
-4. 📱 View and manage discovered devices in the dashboard
-5. 📊 Monitor network activity through event logs
+```bash
+LOGIN_USERNAME=admin
+LOGIN_PASSWORD=your_secure_password
+DATABASE_NAME="reconya-dev"
+JWT_SECRET_KEY="your_jwt_secret"
+SQLITE_PATH="data/reconya-dev.db"
 
-## 🏗️ Architecture
+# IPv6 Monitoring Configuration
+IPV6_MONITORING_ENABLED=true
+IPV6_MONITOR_INTERFACES=
+IPV6_MONITOR_INTERVAL=30
+IPV6_LINK_LOCAL_MONITORING=true
+IPV6_MULTICAST_MONITORING=false
+```
 
-- 🔙 **Backend**: Go API server with SQLite for storage
-- 🖌️ **Frontend**: React/TypeScript web application with responsive Bootstrap UI
-- 🔍 **Scanning**: Network operations performed through native Go libraries
-- 🔄 **Real-time Updates**: Polling system with configurable intervals
-- 🐳 **Deployment**: Docker Compose for easy setup and production use
+## Architecture
 
-### 💾 Database
+- **Backend**: Go API with HTMX templates and SQLite database (Port 3008)
+- **Web Interface**: HTML and vanilla JS
+- **Scanning**: Multi-strategy network discovery with native Go implementation
+- **Database**: SQLite for device storage and event logging
 
-The application uses SQLite for its database, offering several advantages:
+## Scanning Algorithm
 
-#### 🔶 SQLite Benefits
-- 📦 Self-contained, no separate database service required
-- 🧩 Simple setup with minimal configuration
-- 🏠 Perfect for personal or organizational deployments
-- 🪶 Lightweight and portable
-- 🔒 Data is stored locally in a single file
-- 🚫 No need for database administration
+### Discovery Process
 
-## 🔐 Security Notes
+Reconya uses a multi-layered scanning approach built entirely with native Go:
 
-- 🔑 Always use strong passwords in production environments
-- 🔒 Use an `.env` file for all sensitive configuration
-- 🛡️ Never expose the backend API directly to the internet
-- 👮 Run with least privilege required for network scanning
-- 🔄 Keep dependencies updated to patch security vulnerabilities
-- 🧪 Regularly test your deployment for security issues
+**1. Network Discovery (Every 30 seconds)**
+- ICMP ping sweeps (privileged mode)
+- TCP connect probes to common ports (fallback)
+- ARP table lookups for MAC address resolution
 
-## 🔧 Troubleshooting
+**2. Device Identification**
+- IEEE OUI database for vendor identification
+- Multi-method hostname resolution (DNS, NetBIOS, mDNS)
+- Device type classification based on ports and vendors
+
+**3. Port Scanning (Background workers)**
+- Top 100 ports scan for active services
+- Service detection and banner grabbing
+- Concurrent scanning with worker pool pattern
+
+**4. Web Service Detection**
+- Automatic discovery of HTTP/HTTPS services
+- Screenshot capture using headless Chrome
+- Service metadata extraction (titles, server headers)
+
+## Troubleshooting
 
 ### Common Issues
 
-#### Application Not Accessible
-- Make sure ports 3001 and 3008 are not in use by other applications
-- Check that Docker containers are running with `docker ps`
-- View logs with `./logs.sh` to identify any startup errors
-- If the page is blank or shows "Cannot GET /", check the nginx configuration to ensure static files are being served correctly from `/usr/share/nginx/html`
+**No devices found**
+- Run `make status` to check service status
+- Check that you're on the same network segment as target devices
 
-#### CORS Issues
-- If you see CORS errors in the browser console, check:
-  - The CORS configuration in `backend/middleware/cors.go`
-  - The proxy configuration in nginx.conf to ensure proper API routing
-  - The axiosConfig.ts to ensure it's using the correct API URL
-- For local development, set the Access-Control-Allow-Origin header to "*" 
-- For production, set it to your specific domain
+**Services won't start**
+- Run `make stop` to kill any stuck processes
+- Check `make status` for dependency issues
+- Ensure port 3008 is available
 
-#### Authentication Issues
-- For development, API endpoints are set to bypass authentication
-- For production, uncomment the middleware.AuthMiddleware wrapper in main.go
-- If you see "Unauthorized" errors, ensure the JWT token is properly set
-- The default login is admin/admin for development environment
+**Missing MAC addresses**
+- MAC addresses only visible on same network segment
+- Some devices may not respond to ARP requests
 
-#### Permission Issues
-- Some network scanning operations require elevated privileges
-- Make sure Docker has the necessary network permissions
-- If using host networking, run with appropriate privileges
+**Services keep crashing**
+- Verify your `.env` configuration is correct
+- Try stopping and restarting: `make stop && make start`
+- Check logs with: `make logs`
 
-#### Database Issues
-- Check that the data directory is writable by the application
-- If database errors occur, try removing and recreating the data directory
+**Windows SQLite CGO Error**
+- If you see "Binary was compiled with 'CGO_ENABLED=0', go-sqlite3 requires cgo to work":
+  ```bash
+  cd backend
+  CGO_ENABLED=1 go run ./cmd
+  # or for building:
+  make build-cgo
+  ```
+- Ensure you have a C compiler installed (like TDM-GCC or Visual Studio Build Tools)
 
-#### Network Scanning Not Working
-- Verify the network range is correctly specified in the .env file
-- Ensure the application has access to the target network
-- Check that nmap is installed and properly configured
-- Check firewall settings that might block ICMP or TCP scanning
-- Note: Docker containers may have limited network scanning capabilities due to container isolation
+## Uninstalling reconYa
 
-#### Missing MAC Addresses or Vendor Information
-- Ensure nmap is installed: `which nmap`
-- Verify nmap has elevated privileges (see Enhanced Network Scanning Setup above)
-- Check that the setuid bit is set: `ls -la $(which nmap)` (should show 's' in permissions)
-- Run a test scan: `nmap -sn -T4 -R -oX - 192.168.1.1` (should show XML output with address elements)
-- MAC addresses are only visible for devices on the same network segment
-- Some devices may not respond to ping scans or may hide their MAC addresses
+To completely remove reconYa:
 
-### Getting Help
-If you're experiencing issues not covered here, please:
-1. Check the logs using `./logs.sh`
-2. Open an issue in the GitHub repository with detailed information
-3. Include log output and system information in your report
+```bash
+make stop      # Stop any running processes
+make clean     # Remove build artifacts
+rm -rf reconya # Remove the directory
+```
 
-## 🤝 Contributing
+## Experimental Docker Support
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Docker files are available in the `experimental/` directory but are not recommended due to network isolation limitations that prevent proper MAC address discovery. Use local installation for full functionality.
 
-1. 🍴 Fork the repository
-2. 🌿 Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. 💾 Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. 🚀 Push to the branch (`git push origin feature/amazing-feature`)
-5. 🔍 Open a Pull Request with a detailed description
+## 💖 Support the Project
 
-## 📄 License
+If you find reconYa useful, consider supporting its development:
 
-This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License - see the [LICENSE](LICENSE) file for details. Commercial use requires explicit permission from the author.
+<p align="center">
+  <a href="https://github.com/sponsors/chrisvel"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-ea4aaa?logo=githubsponsors&logoColor=white&style=for-the-badge" alt="GitHub Sponsors"></a>
+  <a href="https://www.patreon.com/ChrisVeleris"><img src="https://img.shields.io/badge/Patreon-Support-F96854?logo=patreon&logoColor=white&style=for-the-badge" alt="Patreon"></a>
+  <a href="https://coff.ee/chrisveleris"><img src="https://img.shields.io/badge/Buy_Me_a_Coffee-Support-FFDD00?logo=buymeacoffee&logoColor=black&style=for-the-badge" alt="Buy Me a Coffee"></a>
+  <a href="https://www.paypal.com/donate/?hosted_button_id=QEQCKLXPB6XAE"><img src="https://img.shields.io/badge/PayPal-Donate-0070BA?logo=paypal&logoColor=white&style=for-the-badge" alt="PayPal"></a>
+</p>
 
-## ✨ Features Added in Latest Update
+Your support helps keep reconYa free, open-source, and actively maintained. Every contribution — big or small — makes a difference!
 
-- [Nmap](https://nmap.org/) for inspiration and scanning techniques
-- [React](https://reactjs.org/) for the frontend framework
-- [Go](https://golang.org/) for the backend language
+## Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Make changes and test
+4. Submit pull request
+
+## License
+
+Creative Commons Attribution-NonCommercial 4.0 International License. Commercial use requires permission.
+
+## 🌟 Please check my other projects!
+
+- **[tududi](https://tududi.com)** -  Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration
+- **[BreachHarbor](https://breachharbor.com)** - Cybersecurity suite for digital asset protection  
+- **[Hevetra](https://hevetra.com)** - Digital tracking for child health milestones
